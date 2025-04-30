@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Code Generator";
+    var results = ViewBag.Results as Dictionary<string, string> ?? new();
+}
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #f8f9fa, #e8f0ff);
+        margin: 40px;
+    }
+
+    h2 {
+        color: #34495e;
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 15px;
+        font-family: 'Fira Code', monospace;
+        font-size: 15px;
+        border: 1px solid #bdc3c7;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background: #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    input[type="submit"] {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        border: none;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+        input[type="submit"]:hover {
+            background: linear-gradient(to right, #5b0eca, #1e63d9);
+        }
+
+    .code-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+    }
+
+        .code-buttons button {
+            background: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+            .code-buttons button:hover {
+                background-color: #16a085;
+                transform: scale(1.05);
+            }
+
+    pre#codeOutput {
+        background: #2d3436;
+        color: #dfe6e9;
+        padding: 25px;
+        border-radius: 10px;
+        border: 1px solid #636e72;
+        white-space: pre-wrap;
+        font-family: 'Fira Code', monospace;
+        font-size: 14px;
+        margin-top: 25px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    .footer {
+        margin-top: 50px;
+        text-align: center;
+        font-size: 16px;
+        color: #555;
+        font-weight: 500;
+    }
+
+        .footer span {
+            background: linear-gradient(to right, #f12711, #f5af19);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+</style>
+
+<h2>🚀 ASP.NET Code Generator</h2>
+<form method="post" asp-action="GenerateCode">
+    <label for="sqlInput"><strong>Paste CREATE TABLE SQL:</strong></label><br />
+    <textarea name="sqlInput" rows="15" cols="100">@ViewBag.SqlInput</textarea>
+    <br />
+    <input type="submit" value="✨ Generate Code ✨" />
+</form>
+
+@if (results.Any())
+{
+    <div class="code-buttons">
+        <button onclick="showCode('Entity')">Entity</button>
+        <button onclick="showCode('BLL')">BLL</button>
+        <button onclick="showCode('BLL_Partial')">BLL Partial</button>
+        <button onclick="showCode('DAL')">DAL</button>
+        <button onclick="showCode('DAL_Partial')">DAL Partial</button>
+        <button onclick="showCode('GLOBAL')">GLOBAL</button>
+        <button onclick="showCode('TASK')">TASK</button>
+    </div>
+
+    <pre id="codeOutput"></pre>
+
+    <script>
+        const results = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(results));
+        function showCode(section) {
+            document.getElementById('codeOutput').innerText = results[section];
+        }
+    </script>
+}
+
+<div class="footer">
+    🔧 Made with ❤️ by <span>Fuad Hasan</span>
+</div>
