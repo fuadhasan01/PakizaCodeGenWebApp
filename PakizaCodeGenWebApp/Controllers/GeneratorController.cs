@@ -14,8 +14,19 @@ namespace PakizaCodeGenWebApp.Controllers
         [HttpPost]
         public IActionResult GenerateCode(string sqlInput)
         {
+            if (string.IsNullOrWhiteSpace(sqlInput))
+            {
+                ViewBag.Error = "⚠️ Please paste a valid CREATE TABLE SQL before generating code.";
+                return View("Index");
+            }
             var generator = new GeneratorService();
             var results = generator.GenerateAll(sqlInput);
+            if (results == null || results.Count == 0 || results.Values.Any(v => v.StartsWith("Invalid SQL")))
+            {
+                ViewBag.Error = "⚠️ Your SQL is invalid. Please ensure it's a proper CREATE TABLE script.";
+                ViewBag.SqlInput = sqlInput;
+                return View("Index");
+            }
             ViewBag.Results = results;
             ViewBag.SqlInput = sqlInput;
             return View("Index");
