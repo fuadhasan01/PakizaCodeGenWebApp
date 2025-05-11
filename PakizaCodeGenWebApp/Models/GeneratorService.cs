@@ -310,7 +310,7 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
         public bool Save{className}Info({entityName} {instanceEntity}, Database db, DbTransaction transaction)
         {{
             string NewGuId = Guid.NewGuid().ToString().ToUpper();
-            string sql = $""INSERT INTO {tableName} (Id, {insertCols}) VALUES (@NewGuId, {insertVals})"";
+            string sql = @""INSERT INTO {tableName} (Id, {insertCols}) VALUES (@NewGuId, {insertVals})"";
 
             if (ConfigurationManager.AppSettings[""DB_Type""] == ""ORA"")
                 sql = sql.Replace(""SUBSTRING"", ""SUBSTR"").Replace(""@"", "":"").Replace(""ISNULL"", ""NVL"").Replace(""CONVERT(DATETIME,"", ""TO_DATE("").Replace("",103)"", "",'DD/MM/YYYY')"");
@@ -325,7 +325,7 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
 
         public bool Update{className}Info({entityName} {instanceEntity}, Database db, DbTransaction transaction)
         {{
-            string sql = $""UPDATE {tableName} SET {updateCols} WHERE Id=@Id"";
+            string sql = @""UPDATE {tableName} SET {updateCols} WHERE Id=@Id"";
 
             if (ConfigurationManager.AppSettings[""DB_Type""] == ""ORA"")
                 sql = sql.Replace(""SUBSTRING"", ""SUBSTR"").Replace(""@"", "":"").Replace(""ISNULL"", ""NVL"").Replace(""CONVERT(DATETIME,"", ""TO_DATE("").Replace("",103)"", "",'DD/MM/YYYY')"");
@@ -339,7 +339,7 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
 
         public bool Delete{className}InfoById(object param, Database db, DbTransaction transaction)
         {{
-            string sql = $""DELETE FROM {tableName} WHERE Id=@Id"";
+            string sql = @""DELETE FROM {tableName} WHERE Id=@Id"";
 
             if (ConfigurationManager.AppSettings[""DB_Type""] == ""ORA"")
                 sql = sql.Replace(""SUBSTRING"", ""SUBSTR"").Replace(""@"", "":"").Replace(""ISNULL"", ""NVL"").Replace(""CONVERT(DATETIME,"", ""TO_DATE("").Replace("",103)"", "",'DD/MM/YYYY')"");
@@ -354,7 +354,7 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
         public {entityName} GetSingle{className}RecordById(object param)
         {{
             Database db = DatabaseFactory.CreateDatabase();
-            string sql = $""SELECT {selectFields} FROM {tableName} WHERE Id=@Id"";
+            string sql = @""SELECT {selectFields} FROM {tableName} WHERE Id=@Id"";
 
             if (ConfigurationManager.AppSettings[""DB_Type""] == ""ORA"")
                 sql = sql.Replace(""SUBSTRING"", ""SUBSTR"").Replace(""@"", "":"").Replace(""ISNULL"", ""NVL"").Replace(""CONVERT(DATETIME,"", ""TO_DATE("").Replace("",103)"", "",'DD/MM/YYYY')"");
@@ -415,8 +415,7 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
             if (param != null) obj = ({entityName})param;
 
             Database db = DatabaseFactory.CreateDatabase();
-            string sql = ""SELECT * FROM {tableName}
-            WHERE 1 = 1 "";
+            string sql = @""SELECT * FROM {tableName} WHERE 1 = 1 "";
 
             // Add conditions here if needed using obj.Property
             sql += "" ORDER BY Id"";
@@ -426,7 +425,6 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
             return ds.Tables[0];
         }}
     }}
-}}
 }}
 ";
 }
