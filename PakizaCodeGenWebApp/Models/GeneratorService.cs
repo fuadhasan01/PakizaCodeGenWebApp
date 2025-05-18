@@ -17,8 +17,8 @@ namespace PakizaCodeGenWebApp.Models
             string bllPartial = GenerateBLLPartial(tableSql);
             string dal = GenerateDAL(tableSql);
             string dalPartial = GenerateDALPartial(tableSql);
-            string global = "// Global structure constants";
-            string task = "// Task manager switch";
+            string global = GenerateGlobalConstants(tableSql);
+            string task = GenerateTaskManager(tableSql);
 
             return new Dictionary<string, string>
             {
@@ -428,6 +428,63 @@ namespace ERP.Server.DAL.{schemaPrefix.ToUpper()}
 }}
 ";
 }
+
+        private string GenerateGlobalConstants(string sql)
+        {
+            var match = Regex.Match(sql, @"CREATE TABLE (\w+)_(\w+)", RegexOptions.IgnoreCase);
+            if (!match.Success) return "// Invalid SQL for Global constants generation";
+
+            string schemaPrefix = match.Groups[1].Value;
+            string tableBase = match.Groups[2].Value;
+
+            string pascalPrefix = char.ToUpper(schemaPrefix[0]) + schemaPrefix.Substring(1).ToLower();
+            string className = pascalPrefix + tableBase; // e.g. MercBuyingAgent
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"#region Auto Generated - {schemaPrefix}_{tableBase}");
+            sb.AppendLine($"public const string AG_Save{className}Info = \"AG_Save{className}Info\";");
+            sb.AppendLine($"public const string AG_Update{className}Info = \"AG_Update{className}Info\";");
+            sb.AppendLine($"public const string AG_Delete{className}InfoById = \"AG_Delete{className}InfoById\";");
+            sb.AppendLine($"public const string AG_GetAll{className}Record = \"AG_GetAll{className}Record\";");
+            sb.AppendLine($"public const string AG_GetSingle{className}RecordById = \"AG_GetSingle{className}RecordById\";");
+            sb.AppendLine("#endregion");
+            return sb.ToString();
+        }
+
+        private string GenerateTaskManager(string sql)
+        {
+            var match = Regex.Match(sql, @"CREATE TABLE (\w+)_(\w+)", RegexOptions.IgnoreCase);
+            if (!match.Success) return "// Invalid SQL for Task manager generation";
+
+            string schemaPrefix = match.Groups[1].Value;
+            string tableBase = match.Groups[2].Value;
+
+            string pascalPrefix = char.ToUpper(schemaPrefix[0]) + schemaPrefix.Substring(1).ToLower();
+            string className = pascalPrefix + tableBase; // e.g. MercBuyingAgent
+
+            string instanceBLL = char.ToLower(pascalPrefix[0]) + pascalPrefix.Substring(1) + tableBase + "BLL";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"#region Auto Generated - {schemaPrefix}_{tableBase}");
+            sb.AppendLine($"case ERPTask.AG_Save{className}Info:");
+            sb.AppendLine($"    {className}BLL {instanceBLL} = new {className}BLL();");
+            sb.AppendLine($"    return {instanceBLL}.Save{className}Info(param);");
+            sb.AppendLine($"case ERPTask.AG_Update{className}Info:");
+            sb.AppendLine($"    {instanceBLL} = new {className}BLL();");
+            sb.AppendLine($"    return {instanceBLL}.Update{className}Info(param);");
+            sb.AppendLine($"case ERPTask.AG_Delete{className}InfoById:");
+            sb.AppendLine($"    {instanceBLL} = new {className}BLL();");
+            sb.AppendLine($"    return {instanceBLL}.Delete{className}InfoById(param);");
+            sb.AppendLine($"case ERPTask.AG_GetAll{className}Record:");
+            sb.AppendLine($"    {instanceBLL} = new {className}BLL();");
+            sb.AppendLine($"    return {instanceBLL}.GetAll{className}Record(param);");
+            sb.AppendLine($"case ERPTask.AG_GetSingle{className}RecordById:");
+            sb.AppendLine($"    {instanceBLL} = new {className}BLL();");
+            sb.AppendLine($"    return {instanceBLL}.GetSingle{className}RecordById(param);");
+            sb.AppendLine("#endregion");
+
+            return sb.ToString();
+        }
 
 
 
